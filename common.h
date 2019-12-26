@@ -16,6 +16,7 @@ extern "C"
 {
     void* dlmalloc(size_t);
     void  dlfree(void*);
+    void* dlrealloc(void*, size_t);
 }
 inline void* operator new(size_t size) { return dlmalloc(size); }
 inline void operator delete(void* p) { return dlfree(p); }
@@ -46,7 +47,7 @@ inline void operator delete(void* p) { return dlfree(p); }
 
 #elif INTEGER_MAP_CONTAINER(HAMT)
     #include "HashTrie.h"
-    #define MAP_DECLARE         CHAMTInt<int64> ht
+    #define MAP_DECLARE         THashTrieInt<int64> ht
     #define MAP_INITIALIZE()
     #define MAP_INCREMENT(key)  ht.Add(key)->value++
     #define MAP_LOOKUP(key)     ht.Find(key)

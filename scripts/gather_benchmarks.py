@@ -15,7 +15,7 @@ from collections import defaultdict
 from pprint import pprint
 
 
-GENERATOR = 'Visual Studio 14 2015 Win64'
+GENERATOR = 'Visual Studio 16 2019'
 IGNORE_CACHE = False
 
 

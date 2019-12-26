@@ -8,8 +8,7 @@ option(INTEGER_MAP_USE_DLMALLOC "Use DLMalloc instead of the default C runtime p
 set(INTEGER_MAP_TIMING_METHOD "RDTSC" CACHE STRING "API used to time code")
 set(INTEGER_MAP_EXPERIMENT "INSERT" CACHE STRING "What type of experiment to perform")
 set(INTEGER_MAP_CONTAINER "HAMT" CACHE STRING "Which container type to test")
-#set(INTEGER_MAP_KEY_GENERATION "RANDOM_SEQUENCE_OF_UNIQUE" CACHE STRING "Key creation method")
-set(INTEGER_MAP_KEY_GENERATION "SHUFFLED_ADDRESSES" CACHE STRING "Key creation method")
+set(INTEGER_MAP_KEY_GENERATION "RANDOM_SEQUENCE_OF_UNIQUE" CACHE STRING "Key creation method")
 set(INTEGER_MAP_MAX_ADDRESS_BLOCK_SIZE 256 CACHE INTEGER "Maximum difference between generated address values")
 
 # Valid settings for drop-down lists
@@ -29,6 +28,9 @@ file(GLOB SRCFILES *.cpp)
 file(GLOB INCFILES *.h)
 if (INTEGER_MAP_USE_DLMALLOC)
     list(APPEND SRCFILES dlmalloc/malloc.c)
+    add_definitions(-DMALLOC=dlmalloc)
+    add_definitions(-DFREE=dlfree)
+    add_definitions(-DREALLOC=dlrealloc)
 endif()
 add_executable(CompareIntegerMaps ${SRCFILES} ${INCFILES} config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
