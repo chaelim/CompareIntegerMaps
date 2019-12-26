@@ -86,7 +86,7 @@ Since this project contains a custom hash table implementation, I had to make su
 
     mkdir build
     cd build
-    cmake .. -G "Visual Studio 10"
+    cmake .. -G "Visual Studio 15 2017 Win64"
     cmake --build . --config Debug
     ctest . -C Debug
 

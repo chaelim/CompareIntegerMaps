@@ -1,4 +1,5 @@
-build/
+.vscode/
+_build/
 temp/
 *.png
 *.pyc

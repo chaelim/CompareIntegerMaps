@@ -6,7 +6,7 @@ import time
 
 
 class CMakeBuilder:
-    def __init__(self, srcPath, buildPath='build', generator=None, config='Release'):
+    def __init__(self, srcPath, buildPath='_build', generator=None, config='Release'):
         """Initialize the project using CMake in the given buildPath."""
         if not os.path.exists(buildPath):
             os.makedirs(buildPath)

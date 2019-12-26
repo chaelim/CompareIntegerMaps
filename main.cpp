@@ -126,6 +126,8 @@ int main(int argc, const char* argv[])
 
     Timer::Initialize();
 
+    // Arguments example: 1 8000 18000000 200 0
+
     g_Params.seed = atoi(argv[1]);
     g_Params.operationsPerGroup = atoi(argv[2]);
     g_Params.keyCount = atoi(argv[3]);

@@ -39,7 +39,7 @@ void TestBody()
         {
             size_t key = keys[g_Params.random.integer() % population];
             start = Timer::Sample();
-            MAP_INCREMENT(key);
+            volatile auto cell = MAP_LOOKUP(key);
             end = Timer::Sample();
             accum += end - start - Timer::overhead;
 

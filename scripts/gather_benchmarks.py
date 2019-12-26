@@ -15,7 +15,7 @@ from collections import defaultdict
 from pprint import pprint
 
 
-#GENERATOR = 'Visual Studio 10'
+GENERATOR = 'Visual Studio 16 2019'
 IGNORE_CACHE = False
 
 
@@ -80,7 +80,9 @@ if __name__ == '__main__':
     from datetime import datetime
     start = datetime.now()
 
-    os.chdir(os.path.split(sys.argv[0])[0])
+    script_path = os.path.split(sys.argv[0])[0]
+    if script_path:
+        os.chdir(os.path.split(sys.argv[0])[0])
     filter = re.compile((sys.argv + ['.*'])[1])
     if '--nocache' in sys.argv[1:]:
         IGNORE_CACHE = True
@@ -90,7 +92,8 @@ if __name__ == '__main__':
     maxKeys = 18000000
     granularity = 200
     
-    for container in ['TABLE', 'JUDY']:
+    #for container in ['TABLE', 'JUDY']:
+    for container in ['HAMT', 'TABLE']:
         experiment = Experiment(testLauncher,
             'MEMORY_%s' % container,
             8 if container == 'JUDY' else 1, 0, maxKeys, granularity, 0,

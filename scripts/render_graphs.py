@@ -8,9 +8,9 @@ import os
 import re
 import sys
 import cairo
+#import cairocffi as cairo
 import math
 from pprint import pprint
-import cairo
 
 
 # Smoothing looks good but runs slowly in Python, so you can disable it by specifying --nosmooth
@@ -64,7 +64,7 @@ def floatrange(lo, hi, step):
             break
         yield x
         i += 1
-    
+
 def smoothPoints(inputs, points, k = 1):
     """ Smoothly resamples the curve defined by points.
     inputs: Specifies x co-ordinates of new points.
@@ -90,7 +90,7 @@ def smoothPoints(inputs, points, k = 1):
 #---------------------------------------------------
 class AxisAttribs:
     """ Describes one axis on the graph. Can be linear or logarithmic. """
-    
+
     def __init__(self, size, min, max, step, logarithmic, labeler = lambda x: str(int(x + 0.5))):
         self.size = float(size)
         self.logarithmic = logarithmic
@@ -105,7 +105,7 @@ class AxisAttribs:
         """ Maps x to a point along the axis.
         x should already have been filtered through self.toAxis(), especially if logarithmic. """
         return (x - self.min) / (self.max - self.min) * self.size
-    
+
     def iterLabels(self):
         """ Helper to iterate through all the tick marks along the axis. """
         lo = int(math.floor(self.min / self.step + 1 - 1e-9))
@@ -122,13 +122,13 @@ class AxisAttribs:
 #---------------------------------------------------
 class Graph:
     """ Renders a graph. """
-    
+
     def __init__(self, filename, yaxis):
         self.filename = filename
         self.yaxis = yaxis
         self.xaxis = 'Population'
         self.xattribs = AxisAttribs(400, 55, 18000000, 10, True)
-        self.yattribs = AxisAttribs(150, 0, 500, 100, False, lambda x: '%d ns' % int(x + 0.5))
+        self.yattribs = AxisAttribs(150, 0, 700, 100, False, lambda x: '%d ns' % int(x + 0.5))
         self.curves = []
         self.smoothing = True
         self.small = False
@@ -247,7 +247,7 @@ class Graph:
 if __name__ == '__main__':
     from datetime import datetime
     start = datetime.now()
-    
+
     os.chdir(os.path.split(sys.argv[0])[0])
     filter = re.compile((sys.argv + ['.*'])[1])
     if '--nosmooth' in sys.argv[1:]:
@@ -258,14 +258,14 @@ if __name__ == '__main__':
     if filter.match(graph.filename):
         print('Rendering %s...' % graph.filename)
         graph.addSmoothCurve('Hash Table', (1, .4, .4), results, 'LOOKUP_0_TABLE')
-        graph.addSmoothCurve('Judy Array', (.4, .4, .9), results, 'LOOKUP_0_JUDY')
+        graph.addSmoothCurve('HAMT', (.4, .4, .9), results, 'LOOKUP_0_HAMT')
         graph.render()
 
     graph = Graph('insert.png', 'Insert Time')
     if filter.match(graph.filename):
         print('Rendering %s...' % graph.filename)
         graph.addSmoothCurve('Hash Table', (1, .4, .4), results, 'INSERT_0_TABLE')
-        graph.addSmoothCurve('Judy Array', (.4, .4, .9), results, 'INSERT_0_JUDY')
+        graph.addSmoothCurve('HAMT', (.4, .4, .9), results, 'INSERT_0_HAMT')
         graph.render()
 
     graph = Graph('lookup-cache-stomp.png', 'Lookup Times')
@@ -278,8 +278,8 @@ if __name__ == '__main__':
         graph.addSmoothCurve('', (1, .4, .4, .6), results, 'LOOKUP_1000_TABLE')
         graph.addSmoothCurve('', (1, .4, .4), results, 'LOOKUP_10000_TABLE', width=1.8)
         #graph.addSmoothCurve('', (.4, .4, .9, .5), results, 'LOOKUP_0_JUDY', width=0.35)
-        graph.addSmoothCurve('', (.4, .4, .9, .6), results, 'LOOKUP_1000_JUDY')
-        graph.addSmoothCurve('', (.4, .4, .9), results, 'LOOKUP_10000_JUDY', width=1.8)
+        graph.addSmoothCurve('', (.4, .4, .9, .6), results, 'LOOKUP_1000_HAMT')
+        graph.addSmoothCurve('', (.4, .4, .9), results, 'LOOKUP_10000_HAMT', width=1.8)
         graph.render()
 
     graph = Graph('insert-cache-stomp.png', 'Insert Times')
@@ -291,19 +291,19 @@ if __name__ == '__main__':
         #graph.addSmoothCurve('', (1, .4, .4, .5), results, 'INSERT_0_TABLE', width=0.5)
         graph.addSmoothCurve('', (1, .4, .4, .6), results, 'INSERT_1000_TABLE')
         graph.addSmoothCurve('', (1, .4, .4), results, 'INSERT_10000_TABLE', width=1.8)
-        #graph.addSmoothCurve('', (.4, .4, .9, .5), results, 'INSERT_0_JUDY', width=0.5)
-        graph.addSmoothCurve('', (.4, .4, .9, .6), results, 'INSERT_1000_JUDY')
-        graph.addSmoothCurve('', (.4, .4, .9), results, 'INSERT_10000_JUDY', width=1.8)
+        #graph.addSmoothCurve('', (.4, .4, .9, .5), results, 'INSERT_0_HAMT', width=0.5)
+        graph.addSmoothCurve('', (.4, .4, .9, .6), results, 'INSERT_1000_HAMT')
+        graph.addSmoothCurve('', (.4, .4, .9), results, 'INSERT_10000_HAMT', width=1.8)
         graph.render()
 
     graph = Graph('memory.png', 'Total Bytes Per Item')
     if filter.match(graph.filename):
         print('Rendering %s...' % graph.filename)
-        graph.yattribs = AxisAttribs(150, 0, 25, 5, False)
+        graph.yattribs = AxisAttribs(150, 0, 50, 5, False)
         graph.smoothing = False
         graph.xlabelshift = 21
         graph.addSmoothCurve('Hash Table', (1, .4, .4), results, 'MEMORY_TABLE', -3)
-        graph.addSmoothCurve('Judy Array', (.4, .4, .9), results, 'MEMORY_JUDY')
+        graph.addSmoothCurve('HAMT', (.4, .4, .9), results, 'MEMORY_HAMT')
         graph.render()
-    
+
     print('Elapsed time: %s' % (datetime.now() - start))
