@@ -30,11 +30,16 @@ namespace RDTSC_Timer
 
     inline Tick Sample()
     {
+#ifdef INLINE_ASM
         __asm
         {
             mov eax, 0
             cpuid
         }
+#else
+        int cpuInfo[4] = { -1 };
+        __cpuid(cpuInfo, 0);
+#endif
         return __rdtsc();
     }
 }

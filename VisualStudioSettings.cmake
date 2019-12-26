@@ -10,4 +10,8 @@ if (MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "/DYNAMICBASE:NO /DEBUG /INCREMENTAL:NO" CACHE STRING "Common linker settings" FORCE)
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "" CACHE STRING "Additional linker settings in Debug" FORCE)
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "" CACHE STRING "Additional linker settings in Release" FORCE)
+    
+    # /EHsc : Catches C++ exceptions only and tells the compiler to assume that
+    # functions declared as extern "C" never throw a C++ exception.
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif()

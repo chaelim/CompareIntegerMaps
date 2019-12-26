@@ -7,14 +7,15 @@ option(INTEGER_MAP_TWEAK_PRIORITY_AFFINITY "Lock to a single CPU core and increa
 option(INTEGER_MAP_USE_DLMALLOC "Use DLMalloc instead of the default C runtime platform malloc" ON)
 set(INTEGER_MAP_TIMING_METHOD "RDTSC" CACHE STRING "API used to time code")
 set(INTEGER_MAP_EXPERIMENT "INSERT" CACHE STRING "What type of experiment to perform")
-set(INTEGER_MAP_CONTAINER "TABLE" CACHE STRING "Which container type to test")
-set(INTEGER_MAP_KEY_GENERATION "RANDOM_SEQUENCE_OF_UNIQUE" CACHE STRING "Key creation method")
+set(INTEGER_MAP_CONTAINER "HAMT" CACHE STRING "Which container type to test")
+#set(INTEGER_MAP_KEY_GENERATION "RANDOM_SEQUENCE_OF_UNIQUE" CACHE STRING "Key creation method")
+set(INTEGER_MAP_KEY_GENERATION "SHUFFLED_ADDRESSES" CACHE STRING "Key creation method")
 set(INTEGER_MAP_MAX_ADDRESS_BLOCK_SIZE 256 CACHE INTEGER "Maximum difference between generated address values")
 
 # Valid settings for drop-down lists
 set_property(CACHE INTEGER_MAP_TIMING_METHOD PROPERTY STRINGS QUERY_PERFORMANCE_COUNTER RDTSC)
 set_property(CACHE INTEGER_MAP_EXPERIMENT PROPERTY STRINGS INSERT LOOKUP MEMORY)
-set_property(CACHE INTEGER_MAP_CONTAINER PROPERTY STRINGS NONE JUDY TABLE)
+set_property(CACHE INTEGER_MAP_CONTAINER PROPERTY STRINGS NONE JUDY TABLE HAMT)
 set_property(CACHE INTEGER_MAP_KEY_GENERATION PROPERTY STRINGS LINEAR SORTED_ADDRESSES SHUFFLED_ADDRESSES RANDOM_SEQUENCE_OF_UNIQUE)
 
 # Write build-time configuration options to a header file
@@ -39,4 +40,14 @@ if (INTEGER_MAP_CONTAINER STREQUAL "JUDY")
     add_subdirectory(JudyL)
     include_directories(JudyL)
     target_link_libraries(CompareIntegerMaps JudyL)
+endif()    
+
+# If HAMT is used, add the library to the project
+if (INTEGER_MAP_CONTAINER STREQUAL "HAMT")
+    add_subdirectory(HAMT)
+    include_directories(HAMT)
+    target_link_libraries(CompareIntegerMaps HAMT)
+    if (MSVC)
+        add_definitions(-DSSE42_POPCNT)
+    endif()
 endif()    

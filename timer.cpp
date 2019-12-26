@@ -39,6 +39,7 @@ namespace RDTSC_Timer
         frequency = (endTsc - startTsc) * 10;
         ticksToNanosecs = 1000000000.0 / frequency;
 
+#ifdef INLINE_ASM
         __asm
         {
             mov eax, 0
@@ -46,6 +47,10 @@ namespace RDTSC_Timer
             mov eax, 0
             cpuid
         }
+#else
+        int cpuInfo[4] = { -1 };
+        __cpuid(cpuInfo, 0);
+#endif
         // Take the median average of a bunch of CPUID timings and consider that the overhead.
         // Pretty sure I've seen a few magic fast CPUIDs, and a few slow ones.
         // Median average seems to produce the most consistent overhead measurement between runs.
@@ -53,11 +58,17 @@ namespace RDTSC_Timer
         for (int i = 0; i < 128; i++)
         {
             startTsc = __rdtsc();
+
+#ifdef INLINE_ASM
             __asm
             {
                 mov eax, 0
                 cpuid
             }
+#else
+            __cpuid(cpuInfo, 0);
+#endif
+
             endTsc = __rdtsc();
             timings[i] = endTsc - startTsc;
         }

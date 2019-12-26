@@ -40,9 +40,17 @@ inline void operator delete(void* p) { return dlfree(p); }
     #define MAP_DECLARE         HashTable ht
     #define MAP_INITIALIZE()
     #define MAP_INCREMENT(key)  ht.Insert(key)->value++
+    #define MAP_LOOKUP(key)     ht.Lookup(key)
     #define MAP_CLEAR()         { ht.Clear(); \
                                 ht.Compact(); }
 
+#elif INTEGER_MAP_CONTAINER(HAMT)
+    #include "HashTrie.h"
+    #define MAP_DECLARE         CHAMTInt<int64> ht
+    #define MAP_INITIALIZE()
+    #define MAP_INCREMENT(key)  ht.Add(key)->value++
+    #define MAP_LOOKUP(key)     ht.Find(key)
+    #define MAP_CLEAR()         ht.Clear()
 #else
     #define MAP_DECLARE         
     #define MAP_INITIALIZE()
